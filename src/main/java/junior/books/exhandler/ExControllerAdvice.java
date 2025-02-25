@@ -1,5 +1,6 @@
 package junior.books.exhandler;
 
+import jakarta.persistence.EntityNotFoundException;
 import junior.books.exhandler.exceptions.ConflictException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +20,20 @@ import java.util.List;
 @Slf4j
 public class ExControllerAdvice {
 
-    @ExceptionHandler(value = ConflictException.class)
-    public ResponseEntity<ErrorResponse> handleConflictExceptionException(ConflictException ex) {
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException ex) {
         log.warn(ex.getMessage());
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.CONFLICT.value(),
                 ex.getClass().getSimpleName(), ex.getLocalizedMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.warn(ex.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.NOT_FOUND.value(),
+                ex.getClass().getSimpleName(), ex.getLocalizedMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

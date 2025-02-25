@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 
+import static junior.books.exhandler.constants.AuthorErrorMessage.AUTHOR_ID_NOT_FOUND;
 import static junior.books.exhandler.constants.AuthorErrorMessage.EMAIL_ALREADY_EXISTS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -146,6 +147,52 @@ class AuthorControllerTest {
                 .andExpect(jsonPath("$[0].email").value(email))
                 .andExpect(jsonPath("$[1].name").value(name2))
                 .andExpect(jsonPath("$[1].email").value(email2))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("특정 저자 상세 정보 반환 성공")
+    void get_success() throws Exception {
+        //given
+        String name = "minhyeok";
+        String email = "minhyeok@gmail.com";
+        Author author = Author.builder()
+                .email(email)
+                .name(name)
+                .books(new ArrayList<>())
+                .build();
+        authorRepository.save(author);
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/authors/"+ author.getId()));
+
+        //then
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.email").value(email))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("특정 저자 상세 정보 반환 실패 - 없는 ID")
+    void get_fall_not_exist() throws Exception {
+        //given
+        String name = "minhyeok";
+        String email = "minhyeok@gmail.com";
+        Author author = Author.builder()
+                .email(email)
+                .name(name)
+                .books(new ArrayList<>())
+                .build();
+        authorRepository.save(author);
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/authors/"+ author.getId()+1));
+
+        //then
+        perform.andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value(AUTHOR_ID_NOT_FOUND))
                 .andDo(print());
     }
 }

@@ -29,8 +29,7 @@ public class AuthorController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable Long id) {
-        authorService.get(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(authorService.get(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

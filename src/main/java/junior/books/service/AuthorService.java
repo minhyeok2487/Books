@@ -1,8 +1,10 @@
 package junior.books.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import junior.books.domain.Author;
 import junior.books.dto.author.AuthorCreateRequest;
 import junior.books.dto.author.AuthorGetAllResponse;
+import junior.books.dto.author.AuthorGetResponse;
 import junior.books.dto.author.AuthorUpdateRequest;
 import junior.books.exhandler.exceptions.ConflictException;
 import junior.books.repository.AuthorRepository;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static junior.books.exhandler.constants.AuthorErrorMessage.AUTHOR_ID_NOT_FOUND;
 import static junior.books.exhandler.constants.AuthorErrorMessage.EMAIL_ALREADY_EXISTS;
 
 @Service
@@ -46,8 +49,8 @@ public class AuthorService {
     }
 
     @Transactional(readOnly = true)
-    public void get(Long id) {
-
+    public AuthorGetResponse get(Long id) {
+        return repository.findById(id).map(AuthorGetResponse::new).orElseThrow(() -> new EntityNotFoundException(AUTHOR_ID_NOT_FOUND));
     }
 
     @Transactional
