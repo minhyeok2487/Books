@@ -206,4 +206,34 @@ class BookControllerTest {
                 .andExpect(jsonPath("$[1].title").value(title2))
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("특정 도서 상세 정보 반환 성공")
+    void get_success() throws Exception {
+        //given
+        String title = "books";
+        String description = "books description";
+        String isbn = "1234567890";
+        LocalDate publicationDate = LocalDate.of(2020, 1, 1);
+
+        Book book = Book.builder()
+                .title(title)
+                .description(description)
+                .isbn(isbn)
+                .publicationDate(publicationDate)
+                .author(author)
+                .build();
+        bookRepository.save(book);
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/books/"+ book.getId()));
+
+        //then
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(title))
+                .andExpect(jsonPath("$.description").value(description))
+                .andExpect(jsonPath("$.isbn").value(isbn))
+                .andDo(print());
+    }
+
 }
