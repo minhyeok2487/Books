@@ -20,7 +20,8 @@ import static junior.books.exhandler.constants.AuthorErrorMessage.*;
 public class AuthorService {
     private final AuthorRepository repository;
 
-    private Author get(Long id) {
+    @Transactional(readOnly = true)
+    public Author get(Long id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(AUTHOR_ID_NOT_FOUND));
     }
 
