@@ -1,8 +1,8 @@
 package junior.books.controller;
 
 import jakarta.validation.Valid;
-import junior.books.dto.author.CreateAuthorRequest;
-import junior.books.dto.author.UpdateAuthorRequest;
+import junior.books.dto.author.AuthorCreateRequest;
+import junior.books.dto.author.AuthorUpdateRequest;
 import junior.books.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,15 +17,14 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @PostMapping("")
-    public ResponseEntity<?> create(@RequestBody @Valid CreateAuthorRequest request) {
+    public ResponseEntity<?> create(@RequestBody @Valid AuthorCreateRequest request) {
         authorService.crate(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("")
     public ResponseEntity<?> getAll() {
-        authorService.getAll();
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(authorService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -36,7 +35,7 @@ public class AuthorController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
-                                          @RequestBody UpdateAuthorRequest request) {
+                                          @RequestBody AuthorUpdateRequest request) {
         authorService.update(id, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }

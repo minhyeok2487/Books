@@ -1,8 +1,9 @@
 package junior.books.service;
 
 import junior.books.domain.Author;
-import junior.books.dto.author.CreateAuthorRequest;
-import junior.books.dto.author.UpdateAuthorRequest;
+import junior.books.dto.author.AuthorCreateRequest;
+import junior.books.dto.author.AuthorGetAllResponse;
+import junior.books.dto.author.AuthorUpdateRequest;
 import junior.books.exhandler.exceptions.ConflictException;
 import junior.books.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static junior.books.exhandler.constants.AuthorErrorMessage.EMAIL_ALREADY_EXISTS;
@@ -20,7 +22,7 @@ public class AuthorService {
     private final AuthorRepository repository;
 
     @Transactional
-    public void crate(CreateAuthorRequest request) {
+    public void crate(AuthorCreateRequest request) {
         Optional<Author> exist = repository.findByEmail(request.getEmail());
         validateCreateRequest(exist);
         Author build = Author.builder()
@@ -39,7 +41,8 @@ public class AuthorService {
     }
 
     @Transactional(readOnly = true)
-    public void getAll() {
+    public List<AuthorGetAllResponse> getAll() {
+        return repository.findAll().stream().map(AuthorGetAllResponse::new).toList();
     }
 
     @Transactional(readOnly = true)
@@ -48,7 +51,7 @@ public class AuthorService {
     }
 
     @Transactional
-    public void update(Long id, UpdateAuthorRequest request) {
+    public void update(Long id, AuthorUpdateRequest request) {
 
     }
 

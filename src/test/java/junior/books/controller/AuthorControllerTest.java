@@ -15,7 +15,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.ArrayList;
 
 import static junior.books.exhandler.constants.AuthorErrorMessage.EMAIL_ALREADY_EXISTS;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,8 +49,8 @@ class AuthorControllerTest {
                 .content("{\"name\":\"" + name + "\", \"email\":\"" + email + "\"}"));
 
         //then
-        perform.andExpect(status().isCreated());
-        System.out.println(perform.andReturn().getResponse().getContentAsString());
+        perform.andExpect(status().isCreated())
+                .andDo(print());
     }
 
     @Test
@@ -73,8 +75,8 @@ class AuthorControllerTest {
         //then
         perform.andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value(EMAIL_ALREADY_EXISTS + " / " + email));
-        System.out.println(perform.andReturn().getResponse().getContentAsString());
+                        .value(EMAIL_ALREADY_EXISTS + " / " + email))
+                .andDo(print());
     }
 
     @Test
@@ -89,8 +91,7 @@ class AuthorControllerTest {
                 .content("{\"name\":\"" + name + "\"}"));
 
         //then
-        perform.andExpect(status().isBadRequest());
-        System.out.println(perform.andReturn().getResponse().getContentAsString());
+        perform.andExpect(status().isBadRequest()).andDo(print());
     }
 
     @Test
@@ -105,9 +106,46 @@ class AuthorControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"" + name + "\", \"email\":\"" + email + "\"}"));
 
+        //then
+        perform.andExpect(status().isBadRequest()).andDo(print());
+    }
+
+    @Test
+    @DisplayName("모든 저자 목록 반환 성공")
+    void get_all_success() throws Exception {
+        //given
+        String name = "minhyeok";
+        String email = "minhyeok@gmail.com";
+
+        Author author = Author.builder()
+                .email(email)
+                .name(name)
+                .books(new ArrayList<>())
+                .build();
+        authorRepository.save(author);
+
+        String name2 = "minhyeok123";
+        String email2 = "minhyeok123@gmail.com";
+
+        Author author2 = Author.builder()
+                .email(email2)
+                .name(name2)
+                .books(new ArrayList<>())
+                .build();
+        authorRepository.save(author2);
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/authors")
+                .contentType(MediaType.APPLICATION_JSON));
 
         //then
-        perform.andExpect(status().isBadRequest());
-        System.out.println(perform.andReturn().getResponse().getContentAsString());
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].name").value(name))
+                .andExpect(jsonPath("$[0].email").value(email))
+                .andExpect(jsonPath("$[1].name").value(name2))
+                .andExpect(jsonPath("$[1].email").value(email2))
+                .andDo(print());
     }
 }
