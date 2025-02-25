@@ -1,5 +1,6 @@
 package junior.books.controller;
 
+import jakarta.validation.Valid;
 import junior.books.dto.author.CreateAuthorRequest;
 import junior.books.dto.author.UpdateAuthorRequest;
 import junior.books.service.AuthorService;
@@ -16,9 +17,9 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @PostMapping("")
-    public ResponseEntity<?> create(@RequestBody CreateAuthorRequest request) {
+    public ResponseEntity<?> create(@RequestBody @Valid CreateAuthorRequest request) {
         authorService.crate(request);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("")

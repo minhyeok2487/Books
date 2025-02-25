@@ -1,6 +1,8 @@
 package junior.books.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +12,8 @@ import java.time.LocalDate;
 @Table(name = "book")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Book {
 
     @Id
