@@ -1,6 +1,7 @@
 package junior.books.controller;
 
 import junior.books.domain.Author;
+import junior.books.domain.Book;
 import junior.books.repository.AuthorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,10 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
-import static junior.books.exhandler.constants.AuthorErrorMessage.AUTHOR_ID_NOT_FOUND;
-import static junior.books.exhandler.constants.AuthorErrorMessage.EMAIL_ALREADY_EXISTS;
+import static junior.books.exhandler.constants.AuthorErrorMessage.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -220,6 +221,58 @@ class AuthorControllerTest {
                 .andExpect(jsonPath("$.id").value(author.getId()))
                 .andExpect(jsonPath("$.name").value(reName))
                 .andExpect(jsonPath("$.email").value(reEmail))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("저자 삭제 성공")
+    void delete_success() throws Exception {
+        //given
+        String name = "minhyeok";
+        String email = "minhyeok@gmail.com";
+        Author author = Author.builder()
+                .email(email)
+                .name(name)
+                .books(new ArrayList<>())
+                .build();
+        authorRepository.save(author);
+
+        //when
+        ResultActions perform = mockMvc.perform(delete("/authors/"+ author.getId()));
+
+        //then
+        perform.andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("저자 삭제 실패 - 관련 도서 존재")
+    void delete_fall_exist_books() throws Exception {
+        //given
+        String name = "minhyeok";
+        String email = "minhyeok@gmail.com";
+        Author author = Author.builder()
+                .email(email)
+                .name(name)
+                .books(new ArrayList<>())
+                .build();
+        Book book = Book.builder()
+                .title("test book")
+                .description("test book description")
+                .isbn("test")
+                .publicationDate(LocalDate.now())
+                .author(author)
+                .build();
+        author.addBook(book);
+        authorRepository.save(author);
+
+        //when
+        ResultActions perform = mockMvc.perform(delete("/authors/"+ author.getId()));
+
+        //then
+        perform.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value(AUTHOR_DELETION_BLOCKED_BY_BOOKS))
                 .andDo(print());
     }
 }

@@ -13,15 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static junior.books.exhandler.constants.AuthorErrorMessage.AUTHOR_ID_NOT_FOUND;
-import static junior.books.exhandler.constants.AuthorErrorMessage.EMAIL_ALREADY_EXISTS;
+import static junior.books.exhandler.constants.AuthorErrorMessage.*;
 
 @Service
 @RequiredArgsConstructor
 public class AuthorService {
     private final AuthorRepository repository;
 
-    private Author getAuthor(Long id) {
+    private Author get(Long id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(AUTHOR_ID_NOT_FOUND));
     }
 
@@ -49,19 +48,27 @@ public class AuthorService {
     }
 
     @Transactional(readOnly = true)
-    public AuthorGetResponse get(Long id) {
-        return new AuthorGetResponse(getAuthor(id));
+    public AuthorGetResponse getAuthorResponse(Long id) {
+        return new AuthorGetResponse(get(id));
     }
 
     @Transactional
     public AuthorUpdateResponse update(Long id, AuthorUpdateRequest request) {
-        Author author = getAuthor(id);
+        Author author = get(id);
         author.update(request);
         return new AuthorUpdateResponse(author);
     }
 
     @Transactional
     public void delete(Long id) {
+        Author author = get(id);
+        validateDeleteRequest(author);
+        repository.delete(author);
+    }
 
+    private static void validateDeleteRequest(Author author) {
+        if (!author.getBooks().isEmpty()) {
+            throw new IllegalStateException(AUTHOR_DELETION_BLOCKED_BY_BOOKS);
+        }
     }
 }

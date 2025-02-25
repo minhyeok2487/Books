@@ -28,12 +28,20 @@ public class ExControllerAdvice {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler({EntityNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
         log.warn(ex.getMessage());
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.NOT_FOUND.value(),
                 ex.getClass().getSimpleName(), ex.getLocalizedMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<ErrorResponse> handleDefaultException(Exception ex) {
+        log.warn(ex.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(),
+                ex.getClass().getSimpleName(), ex.getLocalizedMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

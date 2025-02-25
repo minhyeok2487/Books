@@ -36,4 +36,8 @@ public class Author {
         this.name = request.getName();
         this.email = request.getEmail();
     }
+
+    public void addBook(Book book) {
+        this.books.add(book);
+    }
 }
