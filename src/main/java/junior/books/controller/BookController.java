@@ -3,6 +3,7 @@ package junior.books.controller;
 import jakarta.validation.Valid;
 import junior.books.domain.Author;
 import junior.books.dto.book.BookCreateRequest;
+import junior.books.dto.book.BookUpdateRequest;
 import junior.books.service.AuthorService;
 import junior.books.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,11 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable Long id) {
         return new ResponseEntity<>(bookService.getBookResponse(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                    @RequestBody BookUpdateRequest request) {
+        return new ResponseEntity<>(bookService.update(id, request), HttpStatus.OK);
     }
 }

@@ -236,4 +236,95 @@ class BookControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("도서 정보 수정 성공")
+    void update_success() throws Exception {
+        //given
+        String title = "books";
+        String description = "books description";
+        String isbn = "1234567890";
+        LocalDate publicationDate = LocalDate.of(2020, 1, 1);
+
+        Book book = Book.builder()
+                .title(title)
+                .description(description)
+                .isbn(isbn)
+                .publicationDate(publicationDate)
+                .author(author)
+                .build();
+        bookRepository.save(book);
+
+        String reTitle = "minhyeok123";
+
+        //when
+        //JSON content 생성
+        String content = String.format(
+                "{\"title\":\"%s\",\"description\":\"%s\",\"isbn\":\"%s\",\"publicationDate\":\"%s\",\"authorId\":\"%s\"}",
+                reTitle, description, isbn, publicationDate, author.getId()
+        );
+
+        ResultActions perform = mockMvc.perform(put("/books/"+ book.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content));
+
+        //then
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(book.getId()))
+                .andExpect(jsonPath("$.title").value(reTitle))
+                .andExpect(jsonPath("$.description").value(description))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("도서 정보 수정 실패 - 이미 존재 하는 ISBN")
+    void update_fall_exist_isbn() throws Exception {
+        //given
+        String title = "books";
+        String description = "books description";
+        String isbn = "1234567890";
+        LocalDate publicationDate = LocalDate.of(2020, 1, 1);
+
+        Book book = Book.builder()
+                .title(title)
+                .description(description)
+                .isbn(isbn)
+                .publicationDate(publicationDate)
+                .author(author)
+                .build();
+        bookRepository.save(book);
+
+        String title2 = "books";
+        String description2 = "books description";
+        String isbn2 = "9876543210";
+        LocalDate publicationDate2 = LocalDate.of(2020, 1, 1);
+
+        Book book2 = Book.builder()
+                .title(title2)
+                .description(description2)
+                .isbn(isbn2)
+                .publicationDate(publicationDate2)
+                .author(author)
+                .build();
+        bookRepository.save(book2);
+
+        String reTitle = "minhyeok123";
+
+        //when
+        //JSON content 생성
+        String content = String.format(
+                "{\"title\":\"%s\",\"description\":\"%s\",\"isbn\":\"%s\",\"publicationDate\":\"%s\",\"authorId\":\"%s\"}",
+                reTitle, description, isbn2, publicationDate, author.getId()
+        );
+
+        ResultActions perform = mockMvc.perform(put("/books/"+ book.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content));
+
+        //then
+        perform.andExpect(status().isConflict())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value(BOOK_ISBN_ALREADY_EXISTS + " / " + isbn2))
+                .andDo(print());
+    }
+
 }

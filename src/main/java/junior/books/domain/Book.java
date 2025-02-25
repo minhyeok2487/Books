@@ -1,6 +1,7 @@
 package junior.books.domain;
 
 import jakarta.persistence.*;
+import junior.books.dto.book.BookUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,4 +37,11 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
+
+    public void update(BookUpdateRequest request) {
+        this.title = request.getTitle();
+        this.description = request.getDescription();
+        this.isbn = request.getIsbn();
+        this.publicationDate = request.getPublicationDate();
+    }
 }

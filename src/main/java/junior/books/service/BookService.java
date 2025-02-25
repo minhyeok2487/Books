@@ -3,9 +3,7 @@ package junior.books.service;
 import jakarta.persistence.EntityNotFoundException;
 import junior.books.domain.Author;
 import junior.books.domain.Book;
-import junior.books.dto.book.BookCreateRequest;
-import junior.books.dto.book.BookGetAllResponse;
-import junior.books.dto.book.BookGetResponse;
+import junior.books.dto.book.*;
 import junior.books.exhandler.exceptions.ConflictException;
 import junior.books.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -59,4 +57,18 @@ public class BookService {
         Book book = get(id);
         return new BookGetResponse(book);
     }
+
+    @Transactional
+    public BookUpdateResponse update(Long id, BookUpdateRequest request) {
+        Optional<Book> exist = repository.findByIsbn(request.getIsbn());
+        Book book = get(id);
+        if (exist.isPresent()) {
+            if (!exist.get().getId().equals(book.getId()) && exist.get().getIsbn().equals(request.getIsbn())) {
+                throw new ConflictException(BOOK_ISBN_ALREADY_EXISTS, request.getIsbn());
+            }
+        }
+        book.update(request);
+        return new BookUpdateResponse(book);
+    }
+
 }
