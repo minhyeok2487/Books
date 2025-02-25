@@ -1,6 +1,7 @@
 package junior.books.domain;
 
 import jakarta.persistence.*;
+import junior.books.dto.author.AuthorUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,4 +31,9 @@ public class Author {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Book> books = new ArrayList<>();
+
+    public void update(AuthorUpdateRequest request) {
+        this.name = request.getName();
+        this.email = request.getEmail();
+    }
 }

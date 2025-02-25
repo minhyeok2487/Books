@@ -16,8 +16,7 @@ import java.util.ArrayList;
 
 import static junior.books.exhandler.constants.AuthorErrorMessage.AUTHOR_ID_NOT_FOUND;
 import static junior.books.exhandler.constants.AuthorErrorMessage.EMAIL_ALREADY_EXISTS;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -193,6 +192,34 @@ class AuthorControllerTest {
         perform.andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage")
                         .value(AUTHOR_ID_NOT_FOUND))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("저자 정보 수정 성공")
+    void update_success() throws Exception {
+        //given
+        String name = "minhyeok";
+        String email = "minhyeok@gmail.com";
+        Author author = Author.builder()
+                .email(email)
+                .name(name)
+                .books(new ArrayList<>())
+                .build();
+        authorRepository.save(author);
+
+        String reName = "minhyeok123";
+        String reEmail = "minhyeok123@gmail.com";
+
+        //when
+        ResultActions perform = mockMvc.perform(put("/authors/"+ author.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"" + reName + "\", \"email\":\"" + reEmail + "\"}"));
+        //then
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(author.getId()))
+                .andExpect(jsonPath("$.name").value(reName))
+                .andExpect(jsonPath("$.email").value(reEmail))
                 .andDo(print());
     }
 }

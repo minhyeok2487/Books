@@ -2,10 +2,7 @@ package junior.books.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import junior.books.domain.Author;
-import junior.books.dto.author.AuthorCreateRequest;
-import junior.books.dto.author.AuthorGetAllResponse;
-import junior.books.dto.author.AuthorGetResponse;
-import junior.books.dto.author.AuthorUpdateRequest;
+import junior.books.dto.author.*;
 import junior.books.exhandler.exceptions.ConflictException;
 import junior.books.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +21,10 @@ import static junior.books.exhandler.constants.AuthorErrorMessage.EMAIL_ALREADY_
 public class AuthorService {
     private final AuthorRepository repository;
 
+    private Author getAuthor(Long id) {
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(AUTHOR_ID_NOT_FOUND));
+    }
+
     @Transactional
     public void crate(AuthorCreateRequest request) {
         Optional<Author> exist = repository.findByEmail(request.getEmail());
@@ -34,7 +35,6 @@ public class AuthorService {
                 .books(new ArrayList<>())
                 .build();
         repository.save(build);
-
     }
 
     private void validateCreateRequest(Optional<Author> exist) {
@@ -50,12 +50,14 @@ public class AuthorService {
 
     @Transactional(readOnly = true)
     public AuthorGetResponse get(Long id) {
-        return repository.findById(id).map(AuthorGetResponse::new).orElseThrow(() -> new EntityNotFoundException(AUTHOR_ID_NOT_FOUND));
+        return new AuthorGetResponse(getAuthor(id));
     }
 
     @Transactional
-    public void update(Long id, AuthorUpdateRequest request) {
-
+    public AuthorUpdateResponse update(Long id, AuthorUpdateRequest request) {
+        Author author = getAuthor(id);
+        author.update(request);
+        return new AuthorUpdateResponse(author);
     }
 
     @Transactional
