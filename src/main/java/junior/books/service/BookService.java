@@ -71,4 +71,9 @@ public class BookService {
         return new BookUpdateResponse(book);
     }
 
+    @Transactional
+    public void delete(Long id) {
+        Book book = get(id);
+        repository.delete(book);
+    }
 }

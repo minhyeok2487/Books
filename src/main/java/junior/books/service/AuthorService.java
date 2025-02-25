@@ -67,7 +67,7 @@ public class AuthorService {
         repository.delete(author);
     }
 
-    private static void validateDeleteRequest(Author author) {
+    private void validateDeleteRequest(Author author) {
         if (!author.getBooks().isEmpty()) {
             throw new IllegalStateException(AUTHOR_DELETION_BLOCKED_BY_BOOKS);
         }
