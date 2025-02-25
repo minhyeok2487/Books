@@ -116,7 +116,7 @@ class BookControllerTest {
     }
 
     @Test
-    @DisplayName("저자 생성 실패 - 필수 값 null")
+    @DisplayName("도서 생성 실패 - 필수 값 null")
     void create_fail_not_null() throws Exception {
         //given
         String description = "books description";
@@ -139,7 +139,7 @@ class BookControllerTest {
     }
 
     @Test
-    @DisplayName("저자 생성 실패 - 필수 값 empty")
+    @DisplayName("도서 생성 실패 - 필수 값 empty")
     void create_fail_not_empty() throws Exception {
         //given
         String title = "";
@@ -160,5 +160,50 @@ class BookControllerTest {
 
         //then
         perform.andExpect(status().isBadRequest()).andDo(print());
+    }
+
+    @Test
+    @DisplayName("모든 도서 목록 반환 성공")
+    void get_all_success() throws Exception {
+        //given
+        String title = "books";
+        String description = "books description";
+        String isbn = "1234567890";
+        LocalDate publicationDate = LocalDate.of(2020, 1, 1);
+
+        Book book = Book.builder()
+                .title(title)
+                .description(description)
+                .isbn(isbn)
+                .publicationDate(publicationDate)
+                .author(author)
+                .build();
+        bookRepository.save(book);
+
+        String title2 = "books";
+        String description2 = "books description";
+        String isbn2 = "9876543210";
+        LocalDate publicationDate2 = LocalDate.of(2020, 1, 1);
+
+        Book book2 = Book.builder()
+                .title(title2)
+                .description(description2)
+                .isbn(isbn2)
+                .publicationDate(publicationDate2)
+                .author(author)
+                .build();
+        bookRepository.save(book2);
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/books")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        //then
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].title").value(title))
+                .andExpect(jsonPath("$[1].title").value(title2))
+                .andDo(print());
     }
 }

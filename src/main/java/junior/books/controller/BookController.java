@@ -24,4 +24,9 @@ public class BookController {
         bookService.crate(request, author);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @GetMapping("")
+    public ResponseEntity<?> getAll() {
+        return new ResponseEntity<>(bookService.getAll(), HttpStatus.OK);
+    }
 }
