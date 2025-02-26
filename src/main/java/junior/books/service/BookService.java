@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static junior.books.exhandler.constants.BookErrorMessage.BOOK_ID_NOT_FOUND;
 import static junior.books.exhandler.constants.BookErrorMessage.BOOK_ISBN_ALREADY_EXISTS;
+import static junior.books.utils.ValidateMethods.validateIsbn;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +30,7 @@ public class BookService {
 
     @Transactional
     public void crate(BookCreateRequest request, Author author) {
-        Optional<Book> exist = repository.findByIsbn(request.getIsbn());
-        validateCreateRequest(exist);
+        validateCreate(request.getIsbn());
         Book build = Book.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -41,9 +41,10 @@ public class BookService {
         repository.save(build);
     }
 
-    private void validateCreateRequest(Optional<Book> exist) {
-        if (exist.isPresent()) {
-            throw new ConflictException(BOOK_ISBN_ALREADY_EXISTS, exist.get().getIsbn());
+    private void validateCreate(String isbn) {
+        validateIsbn(isbn);
+        if (repository.findByIsbn(isbn).isPresent()) {
+            throw new ConflictException(BOOK_ISBN_ALREADY_EXISTS, isbn);
         }
     }
 
@@ -60,15 +61,20 @@ public class BookService {
 
     @Transactional
     public BookUpdateResponse update(Long id, BookUpdateRequest request) {
-        Optional<Book> exist = repository.findByIsbn(request.getIsbn());
         Book book = get(id);
+        validateUpdate(book, request);
+        book.update(request);
+        return new BookUpdateResponse(book);
+    }
+
+    private void validateUpdate(Book book, BookUpdateRequest request) {
+        validateIsbn(request.getIsbn());
+        Optional<Book> exist = repository.findByIsbn(request.getIsbn());
         if (exist.isPresent()) {
             if (!exist.get().getId().equals(book.getId()) && exist.get().getIsbn().equals(request.getIsbn())) {
                 throw new ConflictException(BOOK_ISBN_ALREADY_EXISTS, request.getIsbn());
             }
         }
-        book.update(request);
-        return new BookUpdateResponse(book);
     }
 
     @Transactional

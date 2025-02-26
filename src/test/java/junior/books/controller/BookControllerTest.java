@@ -295,7 +295,7 @@ class BookControllerTest {
 
         String title2 = "books";
         String description2 = "books description";
-        String isbn2 = "9876543210";
+        String isbn2 = "8076543210";
         LocalDate publicationDate2 = LocalDate.of(2020, 1, 1);
 
         Book book2 = Book.builder()
