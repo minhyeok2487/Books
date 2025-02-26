@@ -6,7 +6,7 @@ import lombok.Getter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Getter
-@Schema(description = "저자 생성 요청 DTO")
+@Schema(description = "저자 생성 Request DTO")
 public class AuthorCreateRequest {
 
     @NotEmpty(message = "이름은 필수입니다.")
