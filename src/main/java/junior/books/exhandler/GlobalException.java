@@ -1,5 +1,6 @@
 package junior.books.exhandler;
 
+import junior.books.exhandler.codes.ErrorCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

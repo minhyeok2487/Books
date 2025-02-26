@@ -6,87 +6,86 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
-import junior.books.exhandler.ErrorCode;
+import junior.books.exhandler.codes.ErrorCode;
+import junior.books.exhandler.codes.ErrorCodeGroup;
 import junior.books.exhandler.ErrorResponse;
-import junior.books.utils.ApiErrorCodeExamples;
+import junior.books.utils.ApiErrorCodes;
 import lombok.Builder;
 import lombok.Getter;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.method.HandlerMethod;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 public class SwaggerConfig {
 
     @Bean
     public OperationCustomizer customize() {
-        return (Operation operation, HandlerMethod handlerMethod) -> {
-            ApiErrorCodeExamples apiErrorCodeExamples = handlerMethod.getMethodAnnotation(ApiErrorCodeExamples.class);
-
-            // @ApiErrorCodeExamples 어노테이션이 붙어있다면
-            if (apiErrorCodeExamples != null) {
-                generateErrorCodeResponseExample(operation, apiErrorCodeExamples.value());
-            }
-
+        return (operation, handlerMethod) -> {
+            Optional.ofNullable(handlerMethod.getMethodAnnotation(ApiErrorCodes.class))
+                    .ifPresent(apiErrorCodes ->
+                            generateErrorCodeResponseExample(
+                                    operation,
+                                    mergeErrorCodes(apiErrorCodes.codes(), apiErrorCodes.groups())
+                            )
+                    );
             return operation;
         };
     }
 
-    // 여러 개의 에러 응답값 추가
+    private ErrorCode[] mergeErrorCodes(ErrorCode[] directCodes, ErrorCodeGroup[] groups) {
+        return Stream.concat(
+                Arrays.stream(directCodes),
+                Arrays.stream(groups)
+                        .flatMap(group -> Arrays.stream(group.getErrorCodes()))
+        ).distinct().toArray(ErrorCode[]::new);
+    }
+
     private void generateErrorCodeResponseExample(Operation operation, ErrorCode[] errorCodes) {
         ApiResponses responses = operation.getResponses();
 
-        // ExampleHolder(에러 응답값) 객체를 만들고 에러 코드별로 그룹화
-        Map<Integer, List<ExampleHolder>> statusWithExampleHolders;
-        statusWithExampleHolders = Arrays.stream(errorCodes)
-                .map(
-                        errorCode -> ExampleHolder.builder()
+        Map<Integer, List<ExampleHolder>> statusWithExampleHolders =
+                Arrays.stream(errorCodes)
+                        .map(errorCode -> ExampleHolder.builder()
                                 .holder(getSwaggerExample(errorCode))
                                 .code(errorCode.getStatus().value())
                                 .name(errorCode.name())
                                 .build()
-                )
-                .collect(Collectors.groupingBy(ExampleHolder::getCode));
+                        )
+                        .collect(Collectors.groupingBy(ExampleHolder::getCode));
 
-        // ExampleHolders를 ApiResponses에 추가
         addExamplesToResponses(responses, statusWithExampleHolders);
     }
 
-    // ErrorResponseDto 형태의 예시 객체 생성
     private Example getSwaggerExample(ErrorCode errorCode) {
-        ErrorResponse errorResponse = ErrorResponse.of(errorCode.getStatus().value(),
-                errorCode.name(), errorCode.getMessage());
-        Example example = new Example();
-        example.setValue(errorResponse);
-        return example;
+        return new Example().value(
+                ErrorResponse.of(
+                        errorCode.getStatus().value(),
+                        errorCode.name(),
+                        errorCode.getMessage()
+                )
+        );
     }
 
-    // exampleHolder를 ApiResponses에 추가
     private void addExamplesToResponses(ApiResponses responses,
                                         Map<Integer, List<ExampleHolder>> statusWithExampleHolders) {
-        statusWithExampleHolders.forEach(
-                (status, v) -> {
-                    Content content = new Content();
-                    MediaType mediaType = new MediaType();
-                    ApiResponse apiResponse = new ApiResponse();
+        statusWithExampleHolders.forEach((status, v) -> {
+            Content content = new Content();
+            MediaType mediaType = new MediaType();
+            ApiResponse apiResponse = new ApiResponse();
 
-                    v.forEach(
-                            exampleHolder -> mediaType.addExamples(
-                                    exampleHolder.getName(),
-                                    exampleHolder.getHolder()
-                            )
-                    );
-                    content.addMediaType("application/json", mediaType);
-                    apiResponse.setContent(content);
-                    responses.addApiResponse(String.valueOf(status), apiResponse);
-                }
-        );
+            v.forEach(exampleHolder -> mediaType.addExamples(
+                    exampleHolder.getName(),
+                    exampleHolder.getHolder()
+            ));
+            content.addMediaType("application/json", mediaType);
+            apiResponse.setContent(content);
+            responses.addApiResponse(String.valueOf(status), apiResponse);
+        });
     }
 }
 

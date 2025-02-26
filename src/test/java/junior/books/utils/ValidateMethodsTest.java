@@ -1,6 +1,6 @@
 package junior.books.utils;
 
-import junior.books.exhandler.ErrorCode;
+import junior.books.exhandler.codes.ErrorCode;
 import junior.books.exhandler.GlobalException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

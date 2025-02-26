@@ -1,4 +1,4 @@
-package junior.books.exhandler;
+package junior.books.exhandler.codes;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,10 +20,10 @@ public enum ErrorCode {
     BOOK_ID_NOT_FOUND(HttpStatus.NOT_FOUND, "없는 도서 ID 입니다."),
 
     //Validate
-    INVALID_ISBN_LENGTH(HttpStatus.NOT_FOUND, "ISBN은 정확히 10자리여야 합니다."),
-    INVALID_ISBN_FORMAT(HttpStatus.NOT_FOUND, "ISBN은 숫자로만 구성되어야 합니다."),
-    INVALID_ISBN_COUNTRY_CODE(HttpStatus.NOT_FOUND, "국가/언어 식별 번호는 10에서 90 사이여야 합니다."),
-    INVALID_ISBN_CHECK_DIGIT(HttpStatus.NOT_FOUND, "체크 디지트(마지막 자리)는 0이어야 합니다.");
+    INVALID_ISBN_LENGTH(HttpStatus.BAD_REQUEST, "ISBN은 정확히 10자리여야 합니다."),
+    INVALID_ISBN_FORMAT(HttpStatus.BAD_REQUEST, "ISBN은 숫자로만 구성되어야 합니다."),
+    INVALID_ISBN_COUNTRY_CODE(HttpStatus.BAD_REQUEST, "국가/언어 식별 번호는 10에서 90 사이여야 합니다."),
+    INVALID_ISBN_CHECK_DIGIT(HttpStatus.BAD_REQUEST, "체크 디지트(마지막 자리)는 0이어야 합니다.");
 
     private final HttpStatus status;
     private final String message;

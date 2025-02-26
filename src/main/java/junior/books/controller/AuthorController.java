@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import junior.books.dto.author.*;
 import junior.books.service.AuthorService;
-import junior.books.utils.ApiErrorCodeExamples;
+import junior.books.utils.ApiErrorCodes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static junior.books.exhandler.ErrorCode.*;
+import static junior.books.exhandler.codes.ErrorCode.*;
 
 
 @Tag(name = "저자 API", description = "저자와 관련한 CRUD API")
@@ -31,7 +31,7 @@ public class AuthorController {
     @PostMapping("")
     @Operation(summary = "저자 생성")
     @ApiResponse(responseCode = "201", description = "저자 생성 성공")
-    @ApiErrorCodeExamples({EMAIL_ALREADY_EXISTS})
+    @ApiErrorCodes(codes = {EMAIL_ALREADY_EXISTS})
     public ResponseEntity<Void> create(@RequestBody @Valid AuthorCreateRequest request) {
         authorService.create(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -61,7 +61,7 @@ public class AuthorController {
                     schema = @Schema(implementation = AuthorGetResponse.class)
             )
     )
-    @ApiErrorCodeExamples({AUTHOR_ID_NOT_FOUND})
+    @ApiErrorCodes(codes = {AUTHOR_ID_NOT_FOUND})
     public ResponseEntity<AuthorGetResponse> get(@PathVariable Long id) {
         return new ResponseEntity<>(authorService.getAuthorResponse(id), HttpStatus.OK);
     }
@@ -75,7 +75,7 @@ public class AuthorController {
                     schema = @Schema(implementation = AuthorUpdateResponse.class)
             )
     )
-    @ApiErrorCodeExamples({AUTHOR_ID_NOT_FOUND})
+    @ApiErrorCodes(codes = {AUTHOR_ID_NOT_FOUND})
     public ResponseEntity<AuthorUpdateResponse> update(@PathVariable Long id,
                                                        @RequestBody AuthorUpdateRequest request) {
         return new ResponseEntity<>(authorService.update(id, request), HttpStatus.OK);
@@ -84,7 +84,7 @@ public class AuthorController {
     @DeleteMapping("/{id}")
     @Operation(summary = "저자를 삭제", description = "연관 도서 있으면 삭제 불가")
     @ApiResponse(responseCode = "200", description = "저자 삭제 성공")
-    @ApiErrorCodeExamples({AUTHOR_ID_NOT_FOUND, AUTHOR_DELETION_BLOCKED_BY_BOOKS})
+    @ApiErrorCodes(codes = {AUTHOR_ID_NOT_FOUND, AUTHOR_DELETION_BLOCKED_BY_BOOKS})
     public ResponseEntity<?> delete(@PathVariable Long id) {
         authorService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);

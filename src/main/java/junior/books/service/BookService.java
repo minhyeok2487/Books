@@ -3,7 +3,7 @@ package junior.books.service;
 import junior.books.domain.Author;
 import junior.books.domain.Book;
 import junior.books.dto.book.*;
-import junior.books.exhandler.ErrorCode;
+import junior.books.exhandler.codes.ErrorCode;
 import junior.books.exhandler.GlobalException;
 import junior.books.repository.BookRepository;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ package junior.books.controller;
 
 import junior.books.domain.Author;
 import junior.books.domain.Book;
-import junior.books.exhandler.ErrorCode;
+import junior.books.exhandler.codes.ErrorCode;
 import junior.books.repository.AuthorRepository;
 import junior.books.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
