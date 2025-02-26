@@ -1,8 +1,22 @@
 # 도서 관리 시스템 CRUD 구현
 
+## 0. 실행방법
+### 빌드
+```shell
+./gradlew build   # Linux/Mac
+gradlew build     # Windows
+```
+
+### 실행
+```shell
+java -jar build/libs/demo-0.0.1-SNAPSHOT.jar
+```
+
+### 서버 실행 후 http://localhost:8080/swagger-ui 에서 Api를 확인할 수 있습니다.
+
 ## 1. 기술 스택
 - Java 17
-- Spring Boot 3.4.3
+- Spring Boot 3.3.1
 - H2 DataBase
 - Spring Data JPA
 
@@ -43,8 +57,6 @@
 | 수정       | PUT| `/books/{id}`      | 요청 본문을 통해 도서 정보 수정                               | -                                                                             |
 | 삭제       | DELETE  | `/books/{id}`      | 도서를 삭제                                                  | -                                                                             |
 
-- 참고: 목록 조회 시 Pagination 및 간단한 필터링(예: 출판일 기준) 기능 추가를 선택적으로 구현
-
 ## 4. 유효성 체크
 - 고유성 체크
   - isbn은 도서마다 유일
@@ -55,7 +67,7 @@
       - 출판사 식별 번호: 다음 3~6자리
       - 책 식별 번호: 다음 7~9자리
       - 체크 디지트: 마지막 자리. 0을 사용.
-  - email은 저자마다 유일해야 합니다.
+  - email은 저자마다 유일.
 - 에러 처리
   - 필수 항목이 null로 들어온 경우
   - 잘못된 입력
