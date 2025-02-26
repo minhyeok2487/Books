@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -49,7 +48,6 @@ class BookControllerTest {
         author = Author.builder()
                 .email(email)
                 .name(name)
-                .books(new ArrayList<>())
                 .build();
         authorRepository.save(author);
     }

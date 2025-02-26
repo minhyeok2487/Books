@@ -30,6 +30,7 @@ public class Author {
     private String email;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<Book> books = new ArrayList<>();
 
     public void update(AuthorUpdateRequest request) {

@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -64,7 +63,6 @@ class AuthorControllerTest {
         Author author = Author.builder()
                 .email(email)
                 .name(name)
-                .books(new ArrayList<>())
                 .build();
         authorRepository.save(author);
 
@@ -137,7 +135,6 @@ class AuthorControllerTest {
         Author author = Author.builder()
                 .email(email)
                 .name(name)
-                .books(new ArrayList<>())
                 .build();
         authorRepository.save(author);
 
@@ -147,7 +144,6 @@ class AuthorControllerTest {
         Author author2 = Author.builder()
                 .email(email2)
                 .name(name2)
-                .books(new ArrayList<>())
                 .build();
         authorRepository.save(author2);
 
@@ -175,7 +171,6 @@ class AuthorControllerTest {
         Author author = Author.builder()
                 .email(email)
                 .name(name)
-                .books(new ArrayList<>())
                 .build();
         authorRepository.save(author);
 
@@ -198,7 +193,6 @@ class AuthorControllerTest {
         Author author = Author.builder()
                 .email(email)
                 .name(name)
-                .books(new ArrayList<>())
                 .build();
         authorRepository.save(author);
 
@@ -221,7 +215,6 @@ class AuthorControllerTest {
         Author author = Author.builder()
                 .email(email)
                 .name(name)
-                .books(new ArrayList<>())
                 .build();
         authorRepository.save(author);
 
@@ -249,7 +242,6 @@ class AuthorControllerTest {
         Author author = Author.builder()
                 .email(email)
                 .name(name)
-                .books(new ArrayList<>())
                 .build();
         authorRepository.save(author);
 
@@ -270,7 +262,6 @@ class AuthorControllerTest {
         Author author = Author.builder()
                 .email(email)
                 .name(name)
-                .books(new ArrayList<>())
                 .build();
         Book book = Book.builder()
                 .title("test book")
