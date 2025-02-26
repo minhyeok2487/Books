@@ -1,5 +1,6 @@
 package junior.books.dto.author;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 
@@ -14,6 +15,8 @@ public class AuthorCreateRequest {
     private String name;
 
     @NotEmpty(message = "이메일은 필수입니다.")
+    @Email(message = "이메일 형식이 아닙니다.")
     @Schema(description = "저자 이메일", example = "minhyeok@example.com")
     private String email;
+
 }

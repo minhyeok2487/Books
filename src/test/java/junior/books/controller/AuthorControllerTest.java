@@ -112,6 +112,22 @@ class AuthorControllerTest {
     }
 
     @Test
+    @DisplayName("저자 생성 실패 - 이메일 형식이 아님")
+    void create_fail_not_email() throws Exception {
+        //given
+        String name = "minhyeok";
+        String email = "minhyeok";
+
+        //when
+        ResultActions perform = mockMvc.perform(post("/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"" + name + "\", \"email\":\"" + email + "\"}"));
+
+        //then
+        perform.andExpect(status().isBadRequest()).andDo(print());
+    }
+
+    @Test
     @DisplayName("모든 저자 목록 반환 성공")
     void get_all_success() throws Exception {
         //given

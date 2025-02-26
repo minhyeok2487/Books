@@ -27,15 +27,8 @@ public class ExControllerAdvice {
         return new ResponseEntity<>(errorResponse, ex.getErrorCode().getStatus());
     }
 
-    //그 외 발생하는 에러
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleDefaultException(Exception ex) {
-        log.error(ex.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ex.getClass().getSimpleName(), ex.getLocalizedMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
+    //validation으로 잡은 에러.
+    //잘못된 입력값 출력
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorListResponse> handleValidationException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
@@ -49,5 +42,14 @@ public class ExControllerAdvice {
         ErrorListResponse errorListResponse = ErrorListResponse.of(HttpStatus.BAD_REQUEST.value(),
                 ex.getClass().getSimpleName(), message);
         return new ResponseEntity<>(errorListResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    //그 외 발생하는 에러
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleDefaultException(Exception ex) {
+        log.error(ex.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                ex.getClass().getSimpleName(), ex.getLocalizedMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
