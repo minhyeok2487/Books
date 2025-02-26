@@ -9,13 +9,18 @@ cd book
 
 ### 빌드
 ```shell
-./gradlew clean build   # Linux/Mac
-gradlew clean build     # Windows
+./gradlew build   # Linux/Mac
+gradlew build     # Windows
 ```
 
 ### 실행
 ```shell
 java -jar build/libs/demo-0.0.1-SNAPSHOT.jar
+```
+
+### Docker로 실행한다면(환경 테스트)
+```shell
+docker-compose up -d
 ```
 
 ### 서버 실행 후 http://localhost:8080/swagger-ui 에서 Api를 확인할 수 있습니다.
