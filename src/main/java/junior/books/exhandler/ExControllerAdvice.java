@@ -1,7 +1,5 @@
 package junior.books.exhandler;
 
-import jakarta.persistence.EntityNotFoundException;
-import junior.books.exhandler.exceptions.ConflictException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,25 +18,19 @@ import java.util.List;
 @Slf4j
 public class ExControllerAdvice {
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException ex) {
+    //GlobalException으로 잡은 에러
+    @ExceptionHandler(GlobalException.class)
+    public ResponseEntity<ErrorResponse> handleGlobalException(GlobalException ex) {
         log.warn(ex.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.CONFLICT.value(),
-                ex.getClass().getSimpleName(), ex.getLocalizedMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        ErrorResponse errorResponse = ErrorResponse.of(ex.getErrorCode().getStatus().value(),
+                ex.getErrorCode().name(), ex.getLocalizedMessage());
+        return new ResponseEntity<>(errorResponse, ex.getErrorCode().getStatus());
     }
 
-    @ExceptionHandler({EntityNotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
-        log.warn(ex.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.NOT_FOUND.value(),
-                ex.getClass().getSimpleName(), ex.getLocalizedMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler({Exception.class})
+    //그 외 발생하는 에러
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleDefaultException(Exception ex) {
-        log.warn(ex.getMessage());
+        log.error(ex.getMessage());
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(),
                 ex.getClass().getSimpleName(), ex.getLocalizedMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

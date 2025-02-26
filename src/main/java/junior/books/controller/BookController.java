@@ -1,5 +1,7 @@
 package junior.books.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import junior.books.domain.Author;
 import junior.books.dto.book.BookCreateRequest;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "도서 API", description = "도서와 관련한 CRUD API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -20,6 +23,7 @@ public class BookController {
     private final AuthorService authorService;
 
     @PostMapping("")
+    @Operation(summary = "도서 생성", description = "요청 값들을 받아 도서를 생성합니다. 저자가 이미 등록되어 있어야합니다.")
     public ResponseEntity<?> create(@RequestBody @Valid BookCreateRequest request) {
         Author author = authorService.get(request.getAuthorId());
         bookService.crate(request, author);

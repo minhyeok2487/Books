@@ -2,6 +2,7 @@ package junior.books.controller;
 
 import junior.books.domain.Author;
 import junior.books.domain.Book;
+import junior.books.exhandler.ErrorCode;
 import junior.books.repository.AuthorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +17,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import static junior.books.exhandler.constants.AuthorErrorMessage.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -76,7 +76,7 @@ class AuthorControllerTest {
         //then
         perform.andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value(EMAIL_ALREADY_EXISTS + " / " + email))
+                        .value(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage()))
                 .andDo(print());
     }
 
@@ -192,7 +192,7 @@ class AuthorControllerTest {
         //then
         perform.andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value(AUTHOR_ID_NOT_FOUND))
+                        .value(ErrorCode.AUTHOR_ID_NOT_FOUND.getMessage()))
                 .andDo(print());
     }
 
@@ -272,7 +272,7 @@ class AuthorControllerTest {
         //then
         perform.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value(AUTHOR_DELETION_BLOCKED_BY_BOOKS))
+                        .value(ErrorCode.AUTHOR_DELETION_BLOCKED_BY_BOOKS.getMessage()))
                 .andDo(print());
     }
 }

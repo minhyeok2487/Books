@@ -1,5 +1,7 @@
 package junior.books.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import junior.books.dto.author.AuthorCreateRequest;
 import junior.books.dto.author.AuthorUpdateRequest;
@@ -9,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "저자 API", description = "저자와 관련한 CRUD API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/authors")
@@ -17,8 +21,9 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @PostMapping("")
+    @Operation(summary = "저자 생성")
     public ResponseEntity<?> create(@RequestBody @Valid AuthorCreateRequest request) {
-        authorService.crate(request);
+        authorService.create(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

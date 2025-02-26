@@ -1,10 +1,10 @@
 package junior.books.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import junior.books.domain.Author;
 import junior.books.domain.Book;
 import junior.books.dto.book.*;
-import junior.books.exhandler.exceptions.ConflictException;
+import junior.books.exhandler.ErrorCode;
+import junior.books.exhandler.GlobalException;
 import junior.books.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static junior.books.exhandler.constants.BookErrorMessage.BOOK_ID_NOT_FOUND;
-import static junior.books.exhandler.constants.BookErrorMessage.BOOK_ISBN_ALREADY_EXISTS;
 import static junior.books.utils.ValidateMethods.validateIsbn;
 
 @Service
@@ -25,7 +23,7 @@ public class BookService {
 
     @Transactional(readOnly = true)
     public Book get(Long id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(BOOK_ID_NOT_FOUND));
+        return repository.findById(id).orElseThrow(() -> new GlobalException(ErrorCode.BOOK_ID_NOT_FOUND));
     }
 
     @Transactional
@@ -44,7 +42,7 @@ public class BookService {
     private void validateCreate(String isbn) {
         validateIsbn(isbn);
         if (repository.findByIsbn(isbn).isPresent()) {
-            throw new ConflictException(BOOK_ISBN_ALREADY_EXISTS, isbn);
+            throw new GlobalException(ErrorCode.BOOK_ISBN_ALREADY_EXISTS);
         }
     }
 
@@ -72,7 +70,7 @@ public class BookService {
         Optional<Book> exist = repository.findByIsbn(request.getIsbn());
         if (exist.isPresent()) {
             if (!exist.get().getId().equals(book.getId()) && exist.get().getIsbn().equals(request.getIsbn())) {
-                throw new ConflictException(BOOK_ISBN_ALREADY_EXISTS, request.getIsbn());
+                throw new GlobalException(ErrorCode.BOOK_ISBN_ALREADY_EXISTS);
             }
         }
     }

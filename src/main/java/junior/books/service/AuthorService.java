@@ -1,9 +1,9 @@
 package junior.books.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import junior.books.domain.Author;
 import junior.books.dto.author.*;
-import junior.books.exhandler.exceptions.ConflictException;
+import junior.books.exhandler.ErrorCode;
+import junior.books.exhandler.GlobalException;
 import junior.books.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static junior.books.exhandler.constants.AuthorErrorMessage.*;
-
 @Service
 @RequiredArgsConstructor
 public class AuthorService {
@@ -22,11 +20,12 @@ public class AuthorService {
 
     @Transactional(readOnly = true)
     public Author get(Long id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(AUTHOR_ID_NOT_FOUND));
+        return repository.findById(id).orElseThrow(
+                () -> new GlobalException(ErrorCode.AUTHOR_ID_NOT_FOUND));
     }
 
     @Transactional
-    public void crate(AuthorCreateRequest request) {
+    public void create(AuthorCreateRequest request) {
         Optional<Author> exist = repository.findByEmail(request.getEmail());
         validateCreateRequest(exist);
         Author build = Author.builder()
@@ -39,7 +38,7 @@ public class AuthorService {
 
     private void validateCreateRequest(Optional<Author> exist) {
         if (exist.isPresent()) {
-            throw new ConflictException(EMAIL_ALREADY_EXISTS, exist.get().getEmail());
+            throw new GlobalException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
     }
 
@@ -69,7 +68,7 @@ public class AuthorService {
 
     private void validateDeleteRequest(Author author) {
         if (!author.getBooks().isEmpty()) {
-            throw new IllegalStateException(AUTHOR_DELETION_BLOCKED_BY_BOOKS);
+            throw new GlobalException(ErrorCode.AUTHOR_DELETION_BLOCKED_BY_BOOKS);
         }
     }
 }

@@ -2,6 +2,7 @@ package junior.books.controller;
 
 import junior.books.domain.Author;
 import junior.books.domain.Book;
+import junior.books.exhandler.ErrorCode;
 import junior.books.repository.AuthorRepository;
 import junior.books.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import static junior.books.exhandler.constants.BookErrorMessage.BOOK_ISBN_ALREADY_EXISTS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -111,7 +111,7 @@ class BookControllerTest {
         //then
         perform.andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value(BOOK_ISBN_ALREADY_EXISTS + " / " + isbn))
+                        .value(ErrorCode.BOOK_ISBN_ALREADY_EXISTS.getMessage()))
                 .andDo(print());
     }
 
@@ -323,7 +323,7 @@ class BookControllerTest {
         //then
         perform.andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value(BOOK_ISBN_ALREADY_EXISTS + " / " + isbn2))
+                        .value(ErrorCode.BOOK_ISBN_ALREADY_EXISTS.getMessage()))
                 .andDo(print());
     }
 
