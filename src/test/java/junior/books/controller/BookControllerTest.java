@@ -208,6 +208,52 @@ class BookControllerTest {
     }
 
     @Test
+    @DisplayName("모든 도서 목록 반환 성공 - 제목 필터링")
+    void get_all_success_with_filtering_name() throws Exception {
+        //given
+        String title = "books";
+        String description = "books description";
+        String isbn = "1234567890";
+        LocalDate publicationDate = LocalDate.of(2020, 1, 1);
+
+        Book book = Book.builder()
+                .title(title)
+                .description(description)
+                .isbn(isbn)
+                .publicationDate(publicationDate)
+                .author(author)
+                .build();
+        bookRepository.save(book);
+
+        String title2 = "test";
+        String description2 = "books description";
+        String isbn2 = "9876543210";
+        LocalDate publicationDate2 = LocalDate.of(2020, 1, 1);
+
+        Book book2 = Book.builder()
+                .title(title2)
+                .description(description2)
+                .isbn(isbn2)
+                .publicationDate(publicationDate2)
+                .author(author)
+                .build();
+        bookRepository.save(book2);
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/books")
+                .param("title", title) // 제목 필터링 추가
+                .contentType(MediaType.APPLICATION_JSON));
+
+
+        //then
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1)) //필터링으로 title2제외
+                .andExpect(jsonPath("$[0].title").value(title))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("특정 도서 상세 정보 반환 성공")
     void get_success() throws Exception {
         //given

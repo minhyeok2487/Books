@@ -14,8 +14,12 @@ public class BookGetAllResponse {
     @Schema(description = "도서 제목", example = "테스트북")
     private final String title;
 
+    @Schema(description = "저자 이름", example = "이민혁")
+    private final String name;
+
     public BookGetAllResponse(Book book) {
         this.id = book.getId();
         this.title = book.getTitle();
+        this.name = book.getAuthor().getName();
     }
 }

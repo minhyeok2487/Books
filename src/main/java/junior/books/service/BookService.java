@@ -6,7 +6,9 @@ import junior.books.dto.book.*;
 import junior.books.exhandler.codes.ErrorCode;
 import junior.books.exhandler.GlobalException;
 import junior.books.repository.BookRepository;
+import junior.books.repository.BookSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +49,12 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public List<BookGetAllResponse> getAll() {
-        return repository.findAll().stream().map(BookGetAllResponse::new).toList();
+    public List<BookGetAllResponse> getAll(BookGetAllRequest request) {
+        Specification<Book> bookSpecification = Specification
+                .where(BookSpecification.authorNameContains(request.getAuthorName()))
+                .and(BookSpecification.titleContains(request.getTitle()))
+                .and(BookSpecification.publishedAfter(request.getAfterPublicationDate()));
+        return repository.findAll(bookSpecification).stream().map(BookGetAllResponse::new).toList();
     }
 
     @Transactional(readOnly = true)

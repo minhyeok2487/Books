@@ -52,8 +52,8 @@ public class BookController {
                     )
             )
     )
-    public ResponseEntity<List<BookGetAllResponse>> getAll() {
-        return new ResponseEntity<>(bookService.getAll(), HttpStatus.OK);
+    public ResponseEntity<List<BookGetAllResponse>> getAll(BookGetAllRequest request) {
+        return new ResponseEntity<>(bookService.getAll(request), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
