@@ -1,16 +1,19 @@
 # 도서 관리 시스템 CRUD 구현
 
 ## 0. 실행방법
+### 프로젝트 다운
+```shell
+git clone https://github.com/minhyeok2487/Books.git
+cd book
+```
 
 ### 빌드
-
 ```shell
-./gradlew build   # Linux/Mac
-gradlew build     # Windows
+./gradlew clean build   # Linux/Mac
+gradlew clean build     # Windows
 ```
 
 ### 실행
-
 ```shell
 java -jar build/libs/demo-0.0.1-SNAPSHOT.jar
 ```
